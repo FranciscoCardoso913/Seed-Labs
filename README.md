@@ -1,9 +1,7 @@
 
-Breve descrição do grupo
-
-* Turno: [L]XX
-* Grupo: YY
+* Turno: L06
+* Grupo: 02
 * Alunos:
-    - Aluno1 upZZZZZ 
-    - Aluno2 upZZZZZ
-    - Aluno3 upZZZZZ
+    - Daniel dos Santos Ferreira up202108771
+    - Francisco Miguel Correia Mariano Pinheiro Cardoso up202108793
+    - José António Pereira Martins up202108794
