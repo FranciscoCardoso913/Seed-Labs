@@ -51,4 +51,6 @@ int main() {
 }
 ```
 
-Compilámos esse programa da seguinte forma `gcc myls.c -o ls`. Por fim, corremos o executável do código que nos é fornecido no guião. Foi imprimida a string `"Hello World!"`, como esperado, e a string `cat: /etc/shadow: Permission denied`, o que sugere que apesar de conseguirmos corrermos o nosso script `ls`, não o corremos com permissões **root**, devido à contramedida da *shell* *dash* descrita no guião. Corremos então `sudo ln -sf /bin/zsh /bin/sh` como dito no guião e repetimos o processo, verificando que desta vez os conteúdos do ficheiro `/etc/shadow` foram imprimidos, concluindo que desta vez corremos o nosso executável `ls` com permissões **root**.
+Compilámos esse programa da seguinte forma `gcc myls.c -o ls`. Por fim, corremos o executável do código que nos é fornecido no guião. Foi imprimida a string `"Hello World!"`, como esperado, e a string `cat: /etc/shadow: Permission denied`, o que sugere que apesar de conseguirmos corrermos o nosso script `ls`, não o corremos com permissões **root**, devido à contramedida da *shell* *dash* descrita no guião. 
+
+Corremos então `sudo ln -sf /bin/zsh /bin/sh` como dito no guião e repetimos o processo, verificando que desta vez os conteúdos do ficheiro `/etc/shadow` foram imprimidos, concluindo que desta vez corremos o nosso executável `ls` com permissões **root**.
