@@ -8,13 +8,13 @@ We first followed the indications given in chapters 1 and 2:
  
 In this task, we simply read the information given in the guide regarding shellcode written in C and Assembly. As asked in chapter 3.4, we compiled the code given by typing `make` and ran both scripts `a32.out` and `a64.out`. Both scripts gave us access to a (root? verificar isto) shell.
 
-### Meter foto de ./a32.out e ./a64.out
+![shellcodes](/img/shellcodes.jpeg)
 
 ## Task 2
 
 In this task, we studied the vulnerable program `stack.c` and compiled it using `make`. After that, we checked that the resulting programs are SET-UID programs that are owned by `root`.
 
-### Meter foto de ls -la no folder com os executaveis stack-Li...
+![permission](/img/permissions.jpeg)
 
 ## Task 3
 In this task, we exploited the stack-L1-dbg using `gdb`.
