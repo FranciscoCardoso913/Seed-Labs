@@ -36,7 +36,7 @@ We ran the following command in order:
 
 The values we got are listed in this picture:
 
-![](img/gdb-info.png)
+![gdb info](img/gdb-info.png)
 
 With this, we get the information that we need to attack the program.
 
@@ -64,3 +64,5 @@ Here are two photos of the first attack that was described:
 ## Task 4
 
 In this task, we had to attack the same program by only knowing the address of the buffer. We also know that the buffer's size is guaranteed to be between 100 and 200. Since we know that the buffer's size is between 100 and 200 and that the address of the frame buffer is a multiple of four there are a limited number of possibilities for the address where the return address is stored. These values are: [112, 116, 120, ..., 208, 212]. To exploit this program we inserted the shellcode above the highest possible address for the return address, that is, we set `start` to 250. After that, we set the value of `ret` to &buffer + 250 to point to the shellcode. Instead of inserting this return address only at the address &buffer + `offset`, we modified the script to insert this value in the list of possible addresses where the return address might be stored [112, 116, ..., 208, 212]. After this, we ran the attack and it worked. We also modified the L2 value in the Makefile to 100 and 200 and tested the attack to see if it worked in the lowest and highest possible values. We ranked both attacks and they also worked.
+
+![modified python script](/img/attack_task4.png)
