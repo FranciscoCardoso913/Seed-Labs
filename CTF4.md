@@ -4,7 +4,7 @@
 
 After reading the CTF statement in moodle we know that there is a script that is running periodically that will be the key to get the flag in this challenge. The first thing was to list the files in the current directory with `ls -la`:
 
-![ls](ls-la.png)
+![ls](/img/ls-la.png)
 
 The files above showed up and we inspected each one of them:
 
@@ -16,7 +16,7 @@ The files above showed up and we inspected each one of them:
 
 In addition to all of this we also ran the command `cat /etc/cron.d/my_cron_script`:
 
-![cronjob](cronjob.png)
+![cronjob](/img/cronjob.png)
 
 This confirms that the file `my_script.sh` is being run every minute
 
