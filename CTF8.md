@@ -6,11 +6,11 @@ When we access the website used for this challenge we encounter a login form tha
 
 ![login-form](img/login_form.png)
 
-We started by analyzing the php code that was given to us and took note of the following:
+We started by analysing the php code that was given to us and took note of the following:
 
 1. The program doesn’t sanitize our input and doesn’t use prepared statements, that is, our input is directly injected in the query that is going to be used;
 
-2. The query that we build must be successful so that it doesn’t return false. If it isn't we get an error and don’t have access to the flag;
+2. The query that we build must be successful so that the method `query` from php doesn’t return false. If it isn't we get an error and don’t have access to the flag;
 
 3. The query has to return at least one valid result so that the flag in printed to us.
 
