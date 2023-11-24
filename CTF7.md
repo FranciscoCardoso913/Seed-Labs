@@ -23,8 +23,7 @@ void load_flag(){
         fgets(flag, FLAG_BUFFER_SIZE, fd);
     }
 }
-```
-```c
+
 int main() {
 load_flag();
    
@@ -40,21 +39,21 @@ load_flag();
     // rest of the code
 ```
 
-Upon analising the code, we observed that the user-input size was restricted to match the buffer size, eliminating the possibility of a buffer overflow attack. However, a significant vulnerability persisted. The printf function responsible for printing the user's input had only one argument, creating an opportunity for exploiting string formatting. This could force the program to  print the contents of the buffer, revealing us the flag.
+Upon analysing the code, we observed that the user's input size was restricted to match the buffer size, eliminating the possibility of a buffer overflow attack. However, a significant vulnerability persisted. The printf function responsible for printing the user's input had only one argument, creating an opportunity for exploiting string formatting. This could force the program to print the contents of the buffer, revealing us the flag.
 
 ### Exploitation Strategy
 
 With a clear understanding of the vulnerability, we start the exploitation process. The first step involved running the program locally with `gdb` to obtain the address of the buffer containing the flag.
 
-![buffer_adress](img/buffer_adress.png)
+![buffer_address](img/buffer_address.png)
 
 Note that this only works due to the absence of PIE allowed which gives a consistent buffer address, simplifying the exploitation process. 
 After that  a Python script was created to construct the desired input.
 
 ![challenge1_script](img/challenge1_script.png)
 
-The script starts to append the buffer address where the flag is contained to the beginning of the string, followed by '%s'. Note that the address is send in the reversed other due to the architecture being little endian.
-This formatting trick makes the printf function interpret the '%s' as a placeholder for a string argument, this results in the printf printing the string stored in the adress located at the beggining of the stack, this address would normally be the adress gave to the printf in the second argument, however as there is no second argumet the value of the string adress will be the value of the first four bytes of our input, in our case the adress of the buffer containing the flag.
+The script starts to append the buffer address where the flag is contained to the beginning of the string, followed by '%s'. Note that the address is sent in the reversed order due to the architecture being little-endian.
+This formatting trick makes the printf function interpret the '%s' as a placeholder for a string argument, that results in the printf printing the string stored in the address located at the beginning of the stack, this address would normally be the address given to the printf in the second argument. However as there is no second argumet the value of the string address will be the value of the first four bytes of our input, in our case the address of the buffer containing the flag.
 
 This attack worked flawlessly giving us the flag.
 
@@ -66,7 +65,7 @@ Before starting the second challeng we ran `checksec` once again and got the fol
 
 ![checksec2](img/checksec2.png)
 
-The only difference from the first challenge is there is no RELRO this time. That is, this program is still vulnerable to a format string attack. 
+The only difference from the first challenge is that there is no RELRO this time. That is, this program is still vulnerable to a format string attack. 
 
 ### Code Analysis and Vulnerability Identification
 
@@ -74,7 +73,7 @@ In this second challenge the vulnerable line is the 15th line `printf(buffer)` b
 
 In this challenge, to have access to the flag, we will need to overwrite the value of the variable `key` to `0xbeef` so that we have access to a shell as we can see in the code below:
 
-```
+```c
 if(key == 0xbeef) {
     printf("Backdoor activated\n");
     fflush(stdout);
@@ -95,7 +94,7 @@ To change the value of the variable key we firstly checked the address of the va
 
 We also ensured that printf starts reading the contents of the buffer immediatly after the first "%.8x" format specifier, as we did in the first challenge.
 
-The attack consisted in using the string `aaaa`, followed by the addres of the variable `key` and finishing with `%.48871x%n` as the input to the program, which was build with the following python script:
+The attack consisted in using the string `aaaa`, followed by the address of the variable `key` and finishing with `%.48871x%n` as the input to the program, which was build with the following python script:
 
 ![build_string_script2](img/build_string_script2.png)
 
@@ -103,7 +102,7 @@ Note that the machine is little-endian and because of that the address of the va
 
 Here is why this input works:
 
-1. Firstly `printf` will print `aaaa` and the four characters that correspond to these ascii values in the hexadecimal format: `24`, `b3`, `04` and `08`, that is, our address divided in bytes. This prints eight characters although some of them aren't visible or don't make sense.
+1. Firstly `printf` will print `aaaa` and the four characters that correspond to these ascii values in the hexadecimal format: `24`, `b3`, `04` and `08`, that is, our address divided in bytes in reverse order. This prints eight characters although some of them aren't visible or don't make sense.
 
 ![first_eight_chars](img/first_eight_chars.png)
 
