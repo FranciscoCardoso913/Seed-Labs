@@ -3,11 +3,14 @@
 ## Challenge 1
 
 The challenge began with an analysis of the program's security properties using the `checksec` command. By doing that we found that:
+
 - The program uses a little-endian 32-bit architecture,
-- The program containts the presence of stack canaries,
+- The program contains the presence of stack canaries,
 - The program uses Partial RELRO implementation,
 - The program has non-executable stack enabled,
 - The program does not use Position Independent Executable (PIE).
+
+![checksec-7-1](img/checksec-7-1.png)
 
 ### Code Analysis and Vulnerability Identification
 
@@ -39,7 +42,7 @@ load_flag();
     // rest of the code
 ```
 
-Upon analysing the code, we observed that the user's input size was restricted to match the buffer size, eliminating the possibility of a buffer overflow attack. However, a significant vulnerability persisted. The printf function responsible for printing the user's input had only one argument, creating an opportunity for exploiting string formatting. This could force the program to print the contents of the buffer, revealing us the flag.
+Upon analyzing the code, we observed that the user's input size was restricted to match the buffer size, eliminating the possibility of a buffer overflow attack. However, a significant vulnerability persisted. The printf function responsible for printing the user's input had only one argument, creating an opportunity for exploiting string formatting. This could force the program to print the contents of the buffer, revealing us the flag.
 
 ### Exploitation Strategy
 
@@ -53,7 +56,7 @@ After that  a Python script was created to construct the desired input.
 ![challenge1_script](img/challenge1_script.png)
 
 The script starts to append the buffer address where the flag is contained to the beginning of the string, followed by '%s'. Note that the address is sent in the reversed order due to the architecture being little-endian.
-This formatting trick makes the printf function interpret the '%s' as a placeholder for a string argument, that results in the printf printing the string stored in the address located at the beginning of the stack, this address would normally be the address given to the printf in the second argument. However as there is no second argumet the value of the string address will be the value of the first four bytes of our input, in our case the address of the buffer containing the flag.
+This formatting trick makes the printf function interpret the '%s' as a placeholder for a string argument, that results in the printf printing the string stored in the address located at the beginning of the stack. This address would normally be the address given to the printf in the second argument, however, as there is no second argument, the value of the string address will be the value of the first four bytes of our input, in our case the address of the buffer containing the flag.
 
 This attack worked flawlessly giving us the flag.
 
@@ -61,15 +64,15 @@ This attack worked flawlessly giving us the flag.
 
 ## Challenge 2: 
 
-Before starting the second challeng we ran `checksec` once again and got the following results:
+Before starting the second challenge we ran `checksec` once again and got the following results:
 
 ![checksec2](img/checksec2.png)
 
-The only difference from the first challenge is that there is no RELRO this time. That is, this program is still vulnerable to a format string attack. 
+The only difference from the first challenge is that there is no RELRO this time. That is, this program is still vulnerable to a format string attack.
 
 ### Code Analysis and Vulnerability Identification
 
-In this second challenge the vulnerable line is the 15th line `printf(buffer)` because buffer holds the input the user gives to the program and it is being used directly as the sole argument to `printf`. Because of this, there exists a format string vulnerability that lets us read or write to an arbitrary address in memory.
+In this second challenge the vulnerable line is the 15th line `printf(buffer)`, because buffer holds the input the user gives to the program and it is being used directly as the sole argument to `printf`. This results in a format string vulnerability that lets us read or write to an arbitrary address in memory.
 
 In this challenge, to have access to the flag, we will need to overwrite the value of the variable `key` to `0xbeef` so that we have access to a shell as we can see in the code below:
 
@@ -92,7 +95,7 @@ To change the value of the variable key we firstly checked the address of the va
 
 ![key_address](img/key_address.png)
 
-We also ensured that printf starts reading the contents of the buffer immediatly after the first "%.8x" format specifier, as we did in the first challenge.
+We also ensured that printf starts reading the contents of the buffer immediately after the first "%.8x" format specifier, as we did in the first challenge.
 
 The attack consisted in using the string `aaaa`, followed by the address of the variable `key` and finishing with `%.48871x%n` as the input to the program, which was build with the following python script:
 
