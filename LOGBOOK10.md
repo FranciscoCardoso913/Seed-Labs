@@ -11,7 +11,7 @@ Para este lab, começámos por compreender cada um dos ficheiros que existiam no
 
 Nesta tarefa, o objetivo é decifrar o texto cifrado presente no ficheiro cyphertext.txt. Para tal, começámos por correr o ficheiro freq.py, que nos devolveu a frequência de cada letra no texto cifrado. Depois, procuramos na wikipedia a frequência de cada letra na língua inglesa, e comparamos com a frequência de cada letra no texto cifrado. Com isto, conseguimos perceber que as letras mais frequentes no texto cifrado são o `N`, o `Y` e o `V`, que correspondem às letras `E`, `T` e `A` na língua inglesa. 
 
-Para substituir as letras no texto cifrado, usamos o comando `tr` do linux, que nos permite substituir caracteres: 
+Para substituir as letras no texto cifrado usamos o comando `tr` do linux que nos permite substituir caracteres: 
 ```bash
 tr 'nyv' 'ETA' < cyphertext.txt > out.txt 
 ``` 
@@ -74,7 +74,7 @@ Assim, no final, corremos a seguinte linha de código para substituir as letras 
 
 ![Changing all the letters from ciphertext.txt](/img/cipher.png)
 
-No final, conseguimos perceber que o texto decifrado no ficheiro out.txt, que é o seguinte: 
+No final, conseguimos perceber que o texto decifrado no ficheiro out.txt é o seguinte: 
 
 ```
 THE OSCARS TURN  ON SUNDAY WHICH SEEMS ABOUT RIGHT AFTER THIS LONG STRANGE
@@ -178,8 +178,6 @@ Por fim, corremos o comando `openssl enc -bf-cbc -e -in words.txt -out bfcfb.txt
 
 ![bf-cbc](img/bfcbc.png)
 
-Abrindo os ficheiros .txt, apesar de não conseguirmos perceber o que está escrito, conseguimos perceber que os ficheiros são diferentes, o que significa que os algoritmos e modos de encriptação funcionaram corretamente. Para além disso, conseguimos perceber que o ficheiro encriptado com o algoritmo AES-128 no modo CBC é o maior. Isto acontece uma vez que este algoritmo usa um tamanho de bloco de 128 bits, enquanto que o algoritmo BF usa um tamanho de bloco de 64 bits. Para além disso, o modo CBC adiciona um bloco extra de 128 bits, que é o IV. Assim, o algoritmo AES-128 no modo CBC é o que tem mais bits, e por isso o ficheiro é maior.
-
 ---
 
 ### Task 3: Encryption Mode – ECB vs. CBC
@@ -189,7 +187,7 @@ Assim, para encriptar o ficheiro pic_original.bmp no modo ECB corremos o seguint
 
 ![código para encriptar o ficheiro no modo ecb](img/ecb-task3-1.png)
 
-Para além disto, como o ficheiro encriptado é um ficheiro .bmp, temos de manter os primeiros 54 bytes: o `header` do ficheiro, de modo que o ficheiro seja considerado um ficheiro .bmp legitimo. Portanto, foi necessário correr o seguinte código:
+Para além disto, como o ficheiro encriptado é um ficheiro .bmp, temos de manter os primeiros 54 bytes: o `header` do ficheiro, de modo que o ficheiro seja considerado um ficheiro .bmp legítimo. Portanto, foi necessário correr o seguinte código:
 
 ```bash
 $ head -c 54 pic_original.bmp > header
@@ -201,7 +199,7 @@ Com isto, conseguimos obter a seguinte imagem:
 
 ![imagem encriptada no modo ecb](img/newecb-task3-1.png)
 
-Podemos verificar que ainda é possível perceber o que está na imagem original, uma vez que o modo ECB encripta cada bloco de 128 bits de forma independente. Assim, como a imagem original tem blocos repetidos, estes são encriptados da mesma forma, e por isso é possível perceber o que está na imagem original. Assim, não foi possível encriptar a imagem de modo que não seja possível perceber o que está na imagem original.
+Podemos verificar que ainda é possível perceber o que está na imagem original, uma vez que o modo ECB encripta cada bloco de 128 bits de forma independente, isto é, sempre com o valor da chave. Assim, como a imagem original tem blocos repetidos, a encriptação de cada um destes blocos dá um mesmo bloco encriptado, e por isso é possível perceber o que está na imagem original. Assim, não foi possível encriptar a imagem de modo que não seja possível perceber o que está na imagem original.
 
 Depois, para encriptar o ficheiro pic_original.bmp no modo CBC corremos o seguinte código:
 
@@ -219,7 +217,7 @@ Com isto, conseguimos obter a seguinte imagem:
 
 ![imagem encriptada no modo cbc](img/newcbc-task3-1.png)
 
-Agora já não é possível perceber o que está na imagem original, uma vez que o modo CBC encripta cada bloco de 128 bits de forma dependente. Assim, como a imagem original tem blocos repetidos, estes são encriptados de forma diferente, e por isso não é possível perceber o que está na imagem original. Assim, conseguimos encriptar a imagem de modo que não seja possível perceber o que está na imagem original.
+Agora já não é possível perceber o que está na imagem original, uma vez que o modo CBC encripta cada bloco de 128 bits de forma dependente. Assim, mesmo que a imagem original tenha blocos repetidos, estes são encriptados com valores diferentes, e, por isso, não é possível perceber o que está na imagem original. Assim, conseguimos encriptar a imagem de modo que não seja possível perceber o que está na imagem original.
 
 Por último, foi pedido para repetirmos o processo, mas com uma imagem à nossa escolha. Para entender melhor os processos e os resultados, fizemos alguns testes: 
 
@@ -227,13 +225,13 @@ Por último, foi pedido para repetirmos o processo, mas com uma imagem à nossa 
 
 ![imagem 1](img/cbc-vs-ebc-1.png)
 
-Num primeiro teste, decidimos utilizar uma fotografia do professor, que tem muitos detalhes. Os resultados obtidos foram os seguintes:
+Num primeiro teste, decidimos utilizar uma fotografia do professor, que tem muitos detalhes e cores diferentes. Os resultados obtidos foram os seguintes:
 
 | Imagem ECB | Imagem CBC |
 |----------|----------|
 | ![Imagem 1](img/ecb-task3-2.png) | ![Imagem 2](img/cbc-task3-2.png) |
 
-Podemos verificar que não há grandes diferenças entre as duas imagens, uma vez que o modo ECB encripta cada bloco de 128 bits de forma independente, e como a imagem tem muitos detalhes, não há blocos repetidos. Assim, os resultados são praticamente semelhantes.
+Podemos verificar que não há grandes diferenças entre as duas imagens, uma vez que o modo ECB encripta cada bloco de 128 bits de forma independente, e como a imagem tem muitas cores diferentes, há poucos blocos repetidos. Assim, os resultados são praticamente semelhantes.
 
 Portanto, esta imagem não é a melhor para perceber as diferenças entre os dois modos de encriptação.
 
@@ -247,7 +245,7 @@ Num segundo teste, decidimos utilizar uma imagem com cores sólidas, para perceb
 |----------|----------|
 | ![Imagem 1](img/ecb-task3-3.png) | ![Imagem 2](img/cbc-task3-3.png) |
 
-Aqui a nossa conclusão é que o fundo branco não ajudou nos resultados obtidos. No modo ECB, é possível verificar um padrão, que não é possível verificar no modo CBC. Isto acontece porque o modo ECB encripta cada bloco de 128 bits de forma independente, e como a imagem tem cores sólidas, há blocos repetidos. Assim, os resultados são diferentes. No CBC verificamos uma vez mais que não é possível perceber o que está na imagem original, uma vez que o modo CBC encripta cada bloco de 128 bits de forma dependente. Assim, como a imagem original tem blocos repetidos, estes são encriptados de forma diferente, e por isso não é possível perceber o que está na imagem original. No entanto, obtivemos em ambas as imagens um fundo preto, que dificulta um pouco a visualização da imagem. 
+Aqui a nossa conclusão é que o fundo branco não ajudou nos resultados obtidos. No modo ECB, é possível verificar um padrão, que não é possível verificar no modo CBC. Isto acontece porque o modo ECB encripta cada bloco de 128 bits de forma independente, e como a imagem tem cores sólidas, há blocos repetidos. Assim, os resultados são diferentes. No CBC verificamos uma vez mais que não é possível perceber o que está na imagem original, uma vez que o modo CBC encripta cada bloco de 128 bits de forma dependente. Assim, mesmo que a imagem original tenha blocos repetidos, estes são encriptados de forma diferente, e por isso não é possível perceber o que está na imagem original. No entanto, obtivemos em ambas as imagens um fundo preto, que dificulta um pouco a visualização da imagem. 
 Assim, decidimos que devíamos fazer uma nova experiência, com uma imagem onde fosse possível perceber melhor as diferenças entre os dois modos de encriptação.
 
 #### Imagem 3
@@ -260,7 +258,7 @@ Para esta experiência decidimos usar o tux, que para além de apresentado como 
 |----------|----------|
 | ![Imagem 1](img/ecb-task3-4.png) | ![Imagem 2](img/cbc-task3-4.png) |
 
-Por fim obtivemos os resultados que esperávamos. No modo ECB, é possível ver claramente o tux, ainda que com cores diferentes. Entretanto, onde as cores diferem um pouco mais, deixamos de compreender bem a figura. Isto deve-se ao facto do modo ECB encriptar cada cor de forma independente, e onde as cores diferirem muito, iremos obter cores diferentes. No modo CBC, é completamente impossível identificar qualquer tipo de figura. Como no modo CBC cada bloco é combinado com o bloco anterior com um XOR, não é possível perceber o que está na imagem original. 
+Por fim, obtivemos os resultados que esperávamos. No modo ECB, é possível ver claramente o tux, ainda que com cores diferentes. Entretanto, onde as cores diferem um pouco mais, deixamos de compreender bem a figura. Isto deve-se ao facto do modo ECB encriptar cada cor de forma independente, e onde as cores diferirem muito, iremos obter cores diferentes. No modo CBC, é completamente impossível identificar qualquer tipo de figura. Como no modo CBC cada bloco é combinado com o bloco anterior com um XOR, não é possível perceber o que está na imagem original. 
 
 Assim, concluímos que o modo ECB tem uma maior vulnerabilidade neste tipo de imagens, desde que a imagem tenha blocos idênticos de cores sólidas, já que estas repetições são facilmente identificadas, uma vez que a encriptação resulta em blocos idênticos. 
 Por sua vez, o modo CBC apresenta-se mais seguro, uma vez que não é possível perceber o que está na imagem original, mesmo que esta tenha blocos idênticos de cores sólidas, já que a encriptação resulta em blocos diferentes. Entretanto, o modo CBC apresenta-se mais lento, uma vez que cada bloco é combinado com o bloco anterior com um XOR, o que torna o processo mais lento. 
