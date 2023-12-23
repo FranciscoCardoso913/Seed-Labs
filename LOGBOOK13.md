@@ -143,9 +143,12 @@ The script captures a packet, identifies if it is an echo request, and, if so, g
 1. **Machine: 1.2.3.4 (Non-Existing Host on the Internet):**
 
 We started by conducting a Wireshark capture in the user VMs. After that we pinged 1.2.3.4 from the user VM without running the Python script.
+
 ![task41](/img/log13/task411.png)
 ![task41](/img/log13/task412.png)
+
 No response was observed, which is expected as the host does not exist. After that we repeated the ping to 1.2.3.4, this time running the script in the attacker VM.
+
 ![task42](/img/log13/task421.png)
 
 
@@ -154,8 +157,10 @@ We can observe that packets were received and accepted, demonstrating successful
 2. **Machine: 10.9.0.99 (Non-Existing Host on the LAN):**
 
 We repeated the process with the non-existing host on the LAN (10.9.0.99).
+
 ![task43](/img/log13/task43.png)
 ![task44](/img/log13/task44.png)
+
 In both situations, the destination was unreachable. This is because the user VM lacks information on how to reach the destination in the ARP table. Consequently, even with the script running, no packets passed the sniffing filters, resulting in no packets being sent.
 
 3. **Machine: 8.8.8.8 (Existing Host on the Internet):**
@@ -166,5 +171,6 @@ Repeated the same process with an existing host on the Internet (8.8.8.8).
 ![task45](/img/log13/task452.png)
 ![task46](/img/log13/task461.png)
 ![task46](/img/log13/task462.png)
+
 Requests were received in both scenarios. The only difference was that, when the script was running, repeated packets were received and detected by the user machine.
 
