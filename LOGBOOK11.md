@@ -84,7 +84,7 @@ This created the file `server.crt` where we can see that the Issuer of the certi
 
 ## Task 4 - Deploying a a Certificato on an Apache-Based HTTPS Website
 
-The objective of this task is to establish an HTTPS website using Apache to better understand the utilization of public-key certificates for web security.
+The objective of this task is to establish an HTTPS website using Apache to better understand the use of public-key certificates for web security.
 
 To accomplish this, we went to the `/etc/apache2/` directory within the container and utilized the existing setup of the HTTPS site, `www.bank32.com`, as a template for our own. A new file, `pacheco2023_apache_ssl.conf`, was created in the site-available directory, containing the code necessary to configure our website (https://www.pacheco2023.com).
 
