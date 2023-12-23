@@ -90,7 +90,6 @@ To accomplish this, we went to the `/etc/apache2/` directory within the containe
 
 ![pacheco2023_apache_ssl.conf](img/log11/pacheco2023_apache_ssl.png)
 
-
 Note that we used the HTML from the bank website. 
 
 After that, we copied the public key and certificate obtained in tasks 2 and 3 to the `/certs` directory, naming them `pacheco2023.key` and `pacheco2023.crt`, respectively. These files will serve as the key and certificate for our website.
@@ -98,7 +97,7 @@ After that, we copied the public key and certificate obtained in tasks 2 and 3 t
 ![pacheco2023_ls](img/log11/pacheco2023_ls.png)
 
 
-Once that was done we execute `a2ensite pacheco2023_apache_ssl` to enabled our website, followed by `service apache2 start` to launch the server. However, upon accessing the website at `https://www.pacheco2023.com`, the browser raised a security warning.
+Once that was done we executed `a2ensite pacheco2023_apache_ssl` to enable our website, followed by `service apache2 start` to launch the server. However, upon accessing the website at `https://www.pacheco2023.com`, the browser raised a security warning.
 
 ![pacheco2023_secure_warning](img/log11/pacheco2023_secure_warning.png)
 
@@ -107,11 +106,9 @@ This warning happens due to the browser's unfamiliarity with the Certificate Aut
 
 ![add_ca](img/log11/add_ca.png)
 
-
 Once completed, accessing the website no longer triggers any security warnings.
 
 ![pacheco2023](img/log11/pacheco2023.png)
-
 
 ## Task 5 - Launching a Man-In-The-Middle Attack
 
@@ -121,16 +118,13 @@ To simulate the attack, we created a fake website using the configuration of `ww
 
 ![example_apache_ssl.conf](img/log11/example_apache_ssl.png)
 
-
-Subsequently, we simulate a DNS attack by adding `10.9.0.80 www.example.com` to the `/etc/hosts` file, redirecting users from the intended site to our site.
+Subsequently, we simulated a DNS attack by adding `10.9.0.80 www.example.com` to the `/etc/hosts` file, redirecting users from the intended site to our site.
 
 ![example_host](img/log11/example_host.png)
 
-
-After reloading and restarting Apache, attempting to access `www.example.com` triggers a browser warning due to the absence of a CA that has signed the request for the website.
+After reloading and restarting Apache, attempting to access `www.example.com` triggers a browser warning due to the absence of a CA that has signed the certificate signing request for our forged website.
 
 ![example_warning](img/log11/example_warning.png)
-
 
 ## Task 6 - Launching a Man-In-The-Middle Attack with a Compromised CA
 
@@ -143,6 +137,6 @@ To achieve this, we repeated tasks 2 and 3, generating a key and certificate for
 
 Once that was finished we simply replaced the files `/certs/bank32.key` and `/certs/bank32.crt` with our own key and certificate.
 
-As a result, when accessing the site, the browser no longer raises any warnings, as we now possess a request signed by the compromised CA.
+As a result, when accessing the site, the browser no longer raises any warnings, as we now possess a certificate signed by the compromised CA.
 
 ![example](img/log11/example.png)
